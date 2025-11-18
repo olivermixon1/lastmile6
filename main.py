@@ -15,16 +15,16 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Allow access from anywhere (iOS app, HTML dashboard)
+# Allow access from iOS app + dashboard HTML
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Serve files in /static (HTML, JS, images)
+# Serve HTML, JS, CSS, icons, images
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
@@ -81,7 +81,7 @@ next_job_id = 3  # auto-increment ID for new jobs
 
 
 # -----------------------------------------------------
-# Routes / API Endpoints
+# API Routes
 # -----------------------------------------------------
 
 @app.get("/")
@@ -126,7 +126,7 @@ def get_drivers():
     return drivers
 
 
-# Assign a driver to a job
+# Assign a driver
 @app.post("/assign/{job_id}/{driver_id}")
 def assign_driver(job_id: int, driver_id: int):
     for job in jobs:
@@ -149,7 +149,17 @@ def complete_job(job_id: int):
     raise HTTPException(status_code=404, detail="Job not found")
 
 
-# Serve the shipper dashboard HTML form
+# -----------------------------------------------------
+# HTML Routes (Admin Panel + Shipper UI)
+# -----------------------------------------------------
+
+# Shipper job creation UI
 @app.get("/shipper")
 def shipper_dashboard():
     return FileResponse("static/shipper_dashboard.html")
+
+
+# Admin control center dashboard UI
+@app.get("/admin")
+def admin_dashboard():
+    return FileResponse("static/admin_dashboard.html")
